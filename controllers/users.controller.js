@@ -1,117 +1,152 @@
 const User = require('../models/users.model');
+const catchAsync = require('../helpers/catchAsync');
+const bcrypt = require('bcryptjs');
+const generateJWT = require('../helpers/jwt');
+const AppError = require('../helpers/appError');
 
-exports.findAll = async (req, res) => {
+exports.loginUser = catchAsync(
+  async (req, res) => {
+    const { email, password } = req.body;
+
+    const user = await User.findOne({
+      where: {
+        email: email.toLowerCase(),
+        status: 'available',
+      },
+    });
+
+    if (!user) {
+      return next(
+        new AppError(
+          'The user could not be found.🌟',
+          404
+        )
+      );
+    }
+
+    if (
+      !(await bcrypt.compare(
+        password,
+        user.password
+      ))
+    ) {
+      return next(
+        new AppError(
+          'Incorrect email or password.🌐',
+          401
+        )
+      );
+    }
+
+    const token = await generateJWT(user.id);
+
+    res.status(200).json({
+      status: 'success',
+      token,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    });
+  }
+);
+
+exports.findAll = catchAsync(async (req, res) => {
   const users = await User.findAll({
     where: {
       status: 'available',
     },
+    attributes: { exclude: ['password'] },
   });
 
   res.status(200).json({
-    message:
-      'The query has been done successs ✌️',
+    status: 'success',
     results: users.length,
-    users,
+    users: users,
   });
-};
+});
 
-exports.userById = async (req, res) => {
-  const { id } = req.params;
+exports.userById = catchAsync(
+  async (req, res) => {
+    const { user } = req;
 
-  const user = await User.findOne({
-    where: {
-      id,
-      status: 'available',
-    },
-  });
-
-  if (!user) {
-    return res.status(404).json({
-      status: 'error',
+    res.status(200).json({
+      status: 'success',
       message:
-        'the user not found in the sistem 😉',
+        'The query has been completed successfully💕',
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
     });
   }
+);
 
-  res.status(200).json({
-    status: 'success',
-    message: 'The query has been done success ✌️',
-    user,
-  });
-};
+exports.createUser = catchAsync(
+  async (req, res) => {
+    const { name, email, password, role } =
+      req.body;
 
-exports.createUser = async (req, res) => {
-  const { name, email, password, role } =
-    req.body;
+    const salt = await bcrypt.genSalt(12);
+    const encryptedPassword = await bcrypt.hash(
+      password,
+      salt
+    );
 
-  const user = await User.create({
-    name,
-    email,
-    password,
-    role,
-  });
+    const user = await User.create({
+      name,
+      email,
+      password: encryptedPassword,
+      role,
+    });
 
-  res.status(201).json({
-    status: 'succes',
-    message: 'The user you created is correct 👌',
-    user,
-  });
-};
+    const token = await generateJWT(user.id);
 
-exports.upDateUser = async (req, res) => {
-  const { id } = req.params;
-
-  const user = await User.findOne({
-    where: {
-      id,
-      status: 'available',
-    },
-  });
-
-  const { name, email } = req.body;
-
-  if (!user) {
-    return res.status(404).json({
-      status: 'error',
-      message:
-        'The user not found in the sistem 🥲',
+    res.status(201).json({
+      status: 'succes',
+      message: 'The user has been created!🔥',
+      token,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
     });
   }
+);
 
-  await user.update({
-    name,
-    email,
-  });
+exports.upDateUser = catchAsync(
+  async (req, res) => {
+    const { name, email } = req.body;
+    const { user } = req;
 
-  res.status(200).json({
-    status: 'success',
-    message: 'The user update is correct 😊',
-  });
-};
+    await user.update({
+      name,
+      email,
+    });
 
-exports.deleteUser = async (req, res) => {
-  const { id } = req.params;
-
-  const user = await User.findOne({
-    where: {
-      id,
-      status: 'available',
-    },
-  });
-
-  if (!user) {
-    return res.status(404).json({
-      status: 'error',
-      message:
-        'the user not found in the sistem 🥲',
+    res.status(200).json({
+      status: 'success',
+      message: 'The user update✨',
     });
   }
+);
 
-  await user.update({
-    status: 'disabled',
-  });
+exports.deleteUser = catchAsync(
+  async (req, res) => {
+    const { user } = req;
 
-  res.status(200).json({
-    message: 'The user has been deleted💕',
-  });
-};
+    await user.update({
+      status: 'disabled',
+    });
+
+    res.status(200).json({
+      message: 'The user has been deleted🤔',
+    });
+  }
+);

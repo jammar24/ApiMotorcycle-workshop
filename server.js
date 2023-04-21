@@ -9,11 +9,12 @@ db.authenticate()
   )
   .catch((err) => console.log(err));
 
-db.sync()
+db.sync({ force: true })
+
   .then(() => console.log('database sync 😉👌'))
   .catch((err) => console.log(err));
 
-const port = process.env.PORT;
+const port = process.env.PORT || 3012;
 
 app.listen(port, () => {
   console.log(` This is your main ${port}❤️ `);
