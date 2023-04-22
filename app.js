@@ -4,7 +4,6 @@ const helmet = require('helmet');
 const hpp = require('hpp');
 const xss = require('xss-clean');
 
-
 const AppError = require('./helpers/appError');
 const globalErrorHandler = require('./controllers/error.controller');
 
@@ -21,7 +20,6 @@ app.use(helmet());
 app.use(express.json());
 app.use(xss());
 app.use(hpp());
-
 
 app.use('/api/v1/users', routerUser);
 app.use('/api/v1/repairs', controllerRepair);
