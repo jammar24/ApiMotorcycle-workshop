@@ -4,13 +4,14 @@ const app = require('./app');
 const { db } = require('./database/config');
 const initModel = require('./models/initModels');
 
-
 db.authenticate()
   .then(() =>
     console.log('database authenticate 😮‍💨')
   )
   .catch((err) => console.log(err));
-  initModel();
+
+initModel();
+
 db.sync()
 
   .then(() => console.log('database sync 😉👌'))
