@@ -8,7 +8,7 @@ const AppError = require('./helpers/appError');
 const globalErrorHandler = require('./controllers/error.controller');
 
 const routerUser = require('./routes/usersRoutes.routes');
-const controllerRepair = require('./routes/repairRoutes.routes');
+const repairRouter = require('./routes/repairRoutes.routes');
 
 const app = express();
 
@@ -22,7 +22,7 @@ app.use(xss());
 app.use(hpp());
 
 app.use('/api/v1/users', routerUser);
-app.use('/api/v1/repairs', controllerRepair);
+app.use('/api/v1/repairs', repairRouter);
 
 app.all('*', (req, res, next) => {
   return next(

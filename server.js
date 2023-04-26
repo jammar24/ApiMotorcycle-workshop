@@ -2,6 +2,7 @@ require('dotenv').config();
 
 const app = require('./app');
 const { db } = require('./database/config');
+const initModel = require('./models/initModel');
 
 db.authenticate()
   .then(() =>
@@ -9,6 +10,7 @@ db.authenticate()
   )
   .catch((err) => console.log(err));
 
+initModel();
 
 db.sync()
 
