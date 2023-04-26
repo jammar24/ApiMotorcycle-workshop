@@ -20,7 +20,7 @@ exports.createRepair = catchAsync(
 
     res.status(201).json({
       status: 'success',
-      message: 'The repair has been created!',
+      message: 'The repair has been created!❤️',
       repair,
     });
   }
@@ -35,7 +35,7 @@ exports.repairUpDate = catchAsync(
     });
 
     res.status(200).json({
-      message: 'The repair has been update',
+      message: 'The repair has been update🔥',
     });
   }
 );
@@ -46,7 +46,7 @@ exports.repairById = catchAsync(
 
     res.status(200).json({
       status: 'success',
-      message: 'The query has been done success',
+      message: 'The query has been done success😊',
       repair,
     });
   }
@@ -61,7 +61,7 @@ exports.deleteRepair = catchAsync(
     });
 
     res.json({
-      message: 'The repair has been deleted',
+      message: 'The repair has been deleted🤔',
     });
   }
 );
@@ -87,7 +87,7 @@ exports.allRepair = catchAsync(
     });
 
     res.status(200).json({
-      message: 'The query has been done successs',
+      message: 'The query has been done successs✨',
       results: repairs.length,
       repairs,
     });
